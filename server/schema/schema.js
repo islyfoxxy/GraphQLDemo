@@ -1,6 +1,5 @@
 const graphql = require('graphql')
 const { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLInt, GraphQLSchema } = graphql
-const _ = require('lodash')
 
 //dummy data
 const userData = [
@@ -13,11 +12,20 @@ const userData = [
 
 //dummy data
 const hobbiesData = [
-  { id: '1', title: 'Programming', description: 'Using computers to make the World better' },
-  { id: '2', title: 'Rowing', description: 'Sweat and feel better before eating donuts' },
-  { id: '3', title: 'Swimming', description: 'Get in the water and learn to become the water' },
-  { id: '4', title: 'Fencing', description: 'A hobby for fency people' },
-  { id: '5', title: 'Hiking', description: 'Where hiking boots and explore the World' },
+  { id: '1', title: 'Programming', description: 'Using computers to make the World better', userId: '1' },
+  { id: '2', title: 'Rowing', description: 'Sweat and feel better before eating donuts', userId: '13' },
+  { id: '3', title: 'Swimming', description: 'Get in the water and learn to become the water', userId: '211' },
+  { id: '4', title: 'Fencing', description: 'A hobby for fency people', userId: '19' },
+  { id: '5', title: 'Hiking', description: 'Where hiking boots and explore the World', userId: '1' },
+]
+
+//dummy posts
+const postsData = [
+  { id: '1', comment: 'Building a Mind', userId: '1' },
+  { id: '2', comment: 'GraphQL is Amaizing', userId: '1' },
+  { id: '3', comment: 'How to Chamge the World', userId: '19' },
+  { id: '4', comment: 'How to Chamge the World', userId: '211' },
+  { id: '5', comment: 'How to Chamge the World', userId: '1' },
 ]
 
 //Create type/object/table
@@ -38,7 +46,28 @@ const HobbyType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     title: { type: GraphQLString },
-    description: { type: GraphQLString }
+    description: { type: GraphQLString },
+    user: {
+      type: UserType,
+      resolve (parent) {
+        return userData.find(item => item.id === parent.userId)
+      }
+    }
+  })
+})
+
+const PostType = new GraphQLObjectType({
+  name: 'Post',
+  description: 'Documentation for Posts',
+  fields: () => ({
+    id: { type: GraphQLID },
+    comment: { type: GraphQLString },
+    user: {
+      type: UserType,
+      resolve (parent) {
+        return userData.find(item => item.id === parent.userId)
+      }
+    }
   })
 })
 
@@ -52,20 +81,27 @@ const RootQuery = new GraphQLObjectType({
       args: {
         id: { type: GraphQLString }
       },
-      resolve (parent, args) {
+      resolve (_, args) {
         //resolve with data, get and return data from a dataStore
-        return _.find(userData, { id: args.id })
+        return userData.find(user => user.id === args.id)
       }
     },
     hobby: {
       type: HobbyType,
       args: { id: { type: GraphQLID } },
-      resolve (parent, args) {
+      resolve (_, args) {
         //return data about hobby
-        return {}
+        return hobbiesData.find(user => user.id === args.id)
+      }
+    },
+    post: {
+      type: PostType,
+      args: { id: { type: GraphQLID } },
+      resolve (_, args) {
+        //return data
+        return postsData.find(user => user.id === args.id)
       }
     }
-
   }
 })
 
