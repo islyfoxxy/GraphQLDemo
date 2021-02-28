@@ -1,5 +1,5 @@
 const graphql = require('graphql')
-const { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLInt, GraphQLSchema } = graphql
+const { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLInt, GraphQLSchema, GraphQLList } = graphql
 
 //dummy data
 const userData = [
@@ -36,7 +36,19 @@ const UserType = new GraphQLObjectType({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
     age: { type: GraphQLInt },
-    profession: { type: GraphQLString }
+    profession: { type: GraphQLString },
+    posts: {
+      type: new GraphQLList(PostType),
+      resolve (parent) {
+        return postsData.filter(post => post.userId === parent.id)
+      }
+    },
+    hobbies: {
+      type: new GraphQLList(HobbyType),
+      resolve (parent) {
+        return hobbiesData.filter(hobby => hobby.userId === parent.id)
+      }
+    }
   })
 })
 
@@ -105,6 +117,49 @@ const RootQuery = new GraphQLObjectType({
   }
 })
 
+//Mutations
+const Mutation = new graphql.GraphQLObjectType({
+  name: 'Mutaion',
+  fields: {
+    CreateUser: {
+      type: UserType,
+      args: {
+        // id: { type: GraphQLID },
+        name: { type: GraphQLString },
+        age: { type: GraphQLInt },
+        profession: { type: GraphQLString }
+      },
+      resolve (_, { name, age, profession }) {
+        return { name, age, profession }
+      }
+    },
+    CreatePost: {
+      type: PostType,
+      args: {
+        // id: { type: GraphQLID },
+        comment: { type: GraphQLString },
+        userId: { type: GraphQLID }
+      },
+      resolve (_, { comment, userId }) {
+        return { comment, userId }
+      }
+    },
+    CreateHobby: {
+      type: HobbyType,
+      args: {
+        // id: { type: GraphQLID },
+        title: { type: GraphQLString },
+        description: { type: GraphQLString },
+        userId: { type: GraphQLID }
+      },
+      resolve (_, { title, description, userId }) {
+        return { title, description, userId }
+      }
+    }
+  }
+})
+
 module.exports = new GraphQLSchema({
-  query: RootQuery
+  query: RootQuery,
+  mutation: Mutation
 })
