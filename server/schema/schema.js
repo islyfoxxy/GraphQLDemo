@@ -1,5 +1,8 @@
 const graphql = require('graphql')
 const { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLInt, GraphQLSchema, GraphQLList } = graphql
+const User = require('../model/user')
+const Hobby = require('../model/hobby')
+const Post = require('../model/post')
 
 //dummy data
 const userData = [
@@ -98,6 +101,12 @@ const RootQuery = new GraphQLObjectType({
         return userData.find(user => user.id === args.id)
       }
     },
+    users: {
+      type: new GraphQLList(UserType),
+      resolve () {
+        return userData
+      }
+    },
     hobby: {
       type: HobbyType,
       args: { id: { type: GraphQLID } },
@@ -106,12 +115,24 @@ const RootQuery = new GraphQLObjectType({
         return hobbiesData.find(user => user.id === args.id)
       }
     },
+    hobbies: {
+      type: new GraphQLList(HobbyType),
+      resolve () {
+        return hobbiesData
+      }
+    },
     post: {
       type: PostType,
       args: { id: { type: GraphQLID } },
       resolve (_, args) {
         //return data
         return postsData.find(user => user.id === args.id)
+      }
+    },
+    posts: {
+      type: new GraphQLList(PostType),
+      resolve () {
+        return postsData
       }
     }
   }
@@ -124,7 +145,6 @@ const Mutation = new graphql.GraphQLObjectType({
     CreateUser: {
       type: UserType,
       args: {
-        // id: { type: GraphQLID },
         name: { type: GraphQLString },
         age: { type: GraphQLInt },
         profession: { type: GraphQLString }
