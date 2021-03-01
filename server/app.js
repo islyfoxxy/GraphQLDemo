@@ -2,10 +2,9 @@ const express = require('express')
 const { graphqlHTTP, getGraphQLParams } = require('express-graphql')
 const mongoose = require('mongoose')
 const app = express()
-const { user, password } = require('./mongocredentials')
-const uri = `mongodb+srv://${user}:${password}@graphqldb.q7nal.mongodb.net/graphqldb?retryWrites=true&w=majority`
+const URI = require('./mongoDbUri')
 
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(URI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 const db = mongoose.connection
 
