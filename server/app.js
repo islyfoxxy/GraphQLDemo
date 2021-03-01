@@ -3,8 +3,8 @@ const { graphqlHTTP } = require('express-graphql')
 const mongoose = require('mongoose')
 const URI = require('./mongoDbUri')
 const schema = require('./schema/index')
-// const testSchema = require('./schema/types_schema')
 const cors = require('cors')
+const port = process.env.PORT || 4000
 const app = express()
 
 mongoose.connect(URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -22,5 +22,5 @@ app.use('/graphql', graphqlHTTP({
   schema
 }))
 
-app.listen(4000,//localhost:4000
+app.listen(port,//localhost:4000
   () => console.log('Listening for requests on my Port 4000!'))
